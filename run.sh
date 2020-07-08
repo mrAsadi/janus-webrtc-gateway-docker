@@ -29,19 +29,15 @@ openssl req -x509 -newkey rsa:4086 \
   -out "/usr/local/etc/keys/janus/cert.pem" \
   -days 3650 -nodes -sha256
 
-chmod -R 775 /usr/local/etc/keys/janus
-
 # Start admin server
-cd /usr/local/etc/janus_admin/
-npm install --save
-node src/index.js >> /var/log/janus &
-cd /usr/local
+node  /usr/local/etc/admin/src/index.js >> /var/log/janus &
 
 # Start Janus Gateway in forever mode
-CMD="janus --stun-server=stun.l.google.com:19302 -L /var/log/janus --rtp-port-range=10000-10200"
-until $CMD
-do
-    :
-done
+janus --stun-server=stun.l.google.com:19302 -L /var/log/janus --rtp-port-range=10000-10200
+
+#until $CMD
+#do
+#    :
+#done
 
 tail -f /var/log/janus

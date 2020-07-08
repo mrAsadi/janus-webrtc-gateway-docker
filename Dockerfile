@@ -331,15 +331,16 @@ RUN npm -v
 #     make install
 
 ENV KEYS_DIR /usr/local/etc/keys/janus
-RUN mkdir $KEYS_DIR
+RUN mkdir -p  $KEYS_DIR
+RUN chmod -R 775 /usr/local/etc/keys/janus
 
 RUN touch /var/log/janus
 COPY run.sh /run.sh
 RUN chmod a+rx /run.sh
 
 COPY admin.zip /usr/local/share/
-RUN cd /usr/local/share/ && unzip admin.zip -d /usr/local/etc/janus_admin
-
+RUN cd /usr/local/share/ && unzip admin.zip -d /usr/local/etc/
+RUN cd /usr/local/etc/admin && npm ci --only=production
 
 
 CMD nginx
@@ -352,5 +353,7 @@ EXPOSE 8000
 EXPOSE 7088
 EXPOSE 7089
 EXPOSE 3030
-
 ENTRYPOINT ["/run.sh"]
+WORKDIR /usr/local/etc/admin/src
+
+
