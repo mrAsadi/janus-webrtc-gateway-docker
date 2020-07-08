@@ -322,10 +322,6 @@ SHELL ["/bin/bash", "-l", "-euxo", "pipefail", "-c"]
 RUN node -v
 RUN npm -v
 
-
-
-CMD nginx && janus
-
 # RUN apt-get -y install iperf iperf3
 # RUN git clone https://github.com/HewlettPackard/netperf.git && \
 #     cd netperf && \
@@ -333,3 +329,28 @@ CMD nginx && janus
 #     ./configure && \
 #     make && \
 #     make install
+
+ENV KEYS_DIR /usr/local/etc/keys/janus
+RUN mkdir $KEYS_DIR
+
+RUN touch /var/log/janus
+COPY run.sh /run.sh
+RUN chmod a+rx /run.sh
+
+COPY admin.zip /usr/local/share/
+RUN cd /usr/local/share/ && unzip admin.zip -d /usr/local/etc/janus_admin
+
+
+
+CMD nginx
+
+EXPOSE 10000-10200/udp
+EXPOSE 8088
+EXPOSE 8089
+EXPOSE 8889
+EXPOSE 8000
+EXPOSE 7088
+EXPOSE 7089
+EXPOSE 3030
+
+ENTRYPOINT ["/run.sh"]
